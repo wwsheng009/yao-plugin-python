@@ -1,0 +1,18 @@
+syntax = "proto3";
+package proto;
+option go_package = "./";
+
+
+message Request {
+    string name = 1;
+    bytes payload = 2;
+}
+
+message Response {
+    bytes response = 1;
+    string type = 2;
+}
+
+service Model {
+    rpc Exec( Request ) returns ( Response );
+}
