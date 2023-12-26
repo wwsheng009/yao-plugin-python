@@ -1,0 +1,24 @@
+{
+    "name": "hello",
+    "version": "1.0.0",
+    "description": "hello",
+    "group": "",
+    "guard": "-",
+    "paths": [
+        {
+            // /api/grpc/hello
+            "label": "hello",
+            "description": "hello",
+            "path": "/hello",
+            "method": "get",
+            "process": "scripts.mylib.hello",
+            "in": [
+                "$query.name"
+            ],
+            "out": {
+                "status": 200,
+                "type": "application/json"
+            }
+        }
+    ]
+}

@@ -41,20 +41,15 @@ class GRPCControllerServicer(grpc_controller_pb2_grpc.GRPCControllerServicer):
         """
         Shut down the server using the configured grace period
         """
+        
         log.info("Shutdown")
+
+        # return if use the independent grpc server ,don't stop the server
+        #
         event = self._server.stop(self._grace)  # type: threading.Event
         if not event.wait():
             self._server.stop(0)
         return grpc_controller_pb2.Empty()
-        # # Implement your shutdown logic here
-        # # You can access the request parameters using `request.<parameter_name>`
-        # # Return a `ShutdownResponse` message to send a response back to the client
-        # print("Shutdown the server...")
-        # sys.stdout.flush()
-        # server.stop(0)
-        # exit()
-        # # Set any necessary response parameters
-        # return grpc_controller_pb2.Empty()
 
 class ModelServicer(model_pb2_grpc.ModelServicer):
     """Implementation of Model service."""
@@ -76,18 +71,11 @@ class ModelServicer(model_pb2_grpc.ModelServicer):
         result.type = 'map'
         sys.stdout.flush()
         return result
-
-# Define a signal handler function for the OS kill signal
-# def handle_os_kill_signal(signum, frame):
-#     print("Received OS kill signal. Stopping the server...")
-#     server.stop(0)
-#     exit()
-
-
+        
 def serve():
 
     logging.basicConfig(
-        filename="test.log",
+        filename="myplugin.log",
         level=logging.INFO,
         format="{asctime}.{msecs:03.0f}:{levelname}:{name}:{message}",
         style="{",
@@ -106,34 +94,18 @@ def serve():
     grpc_controller_pb2_grpc.add_GRPCControllerServicer_to_server(GRPCControllerServicer(server), server)
 
     server.add_insecure_port('127.0.0.1:1234')
-
-    # # Register the signal handler for the OS kill signal
-    # signal.signal(signal.SIGINT, handle_os_kill_signal)
-    # signal.signal(signal.SIGTERM, handle_os_kill_signal)
     server.start()
     log.info("Server started")
 
-    # Output information
-    # print("1|1|tcp|127.0.0.1:1234|grpc")
+    # Output handshake information
+    # tcp is the communication protocal
+    # 1234 is the http port
     handshake = "1|1|tcp|127.0.0.1:1234|grpc"
-    # sys.stdout.flush()
     
     log.debug(f"Handshake: '{handshake}'")
     print(handshake, flush=True)
 
     server.wait_for_termination()
-    # log.info("Exit main")
-
-
-    # 不要用下面的处理方法，要不然退不出
-    # try:
-    #     while True:
-    #         time.sleep(60 * 60 * 24)
-    # except KeyboardInterrupt:
-    #     # print("Keyboard interrupt detected. Stopping the server...")
-    #     log.info("Exit main")
-    #     server.stop(0)
-    #     exit()
     
 if __name__ == '__main__':
     serve()
