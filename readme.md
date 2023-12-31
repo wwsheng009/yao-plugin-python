@@ -86,3 +86,20 @@ go build -o py.dll .\py.go
 ```sh
 yao run plugins.py.hello world
 ```
+
+## text embedding
+
+use the offline model for text embedding
+
+```sh
+pip install torch text2vec
+```
+
+```py
+
+from text2vec import SentenceModel
+# 自动下载并加载模型
+model = SentenceModel('shibing624/text2vec-bge-large-chinese')
+sentence = '这里是你想编码的文本输入'
+vec = model.encode(sentence)
+```

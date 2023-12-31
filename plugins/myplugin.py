@@ -22,7 +22,7 @@ from plugin import grpc_controller_pb2_grpc
 from grpc_health.v1.health import HealthServicer
 from grpc_health.v1 import health_pb2, health_pb2_grpc
 
-
+import process
 
 class GRPCControllerServicer(grpc_controller_pb2_grpc.GRPCControllerServicer):
     """
@@ -43,7 +43,7 @@ class GRPCControllerServicer(grpc_controller_pb2_grpc.GRPCControllerServicer):
         """
         
         log.info("Shutdown")
-
+        return
         # return if use the independent grpc server ,don't stop the server
         #
         event = self._server.stop(self._grace)  # type: threading.Event
@@ -56,14 +56,28 @@ class ModelServicer(model_pb2_grpc.ModelServicer):
 
     def Exec(self, request, context):
         name = request.name
-        payload = request.payload
-        string = payload.decode()
+        argsStr = request.payload.decode()
         result = model_pb2.Response()
-        data = {
-            'request name': name,
-            'your intput': string
-        }   
-        json_data = json.dumps(data)
+        response = {
+            'code':0,
+            'data':'',
+            'message':''
+        }
+        args = []
+        if args != "":
+            args = json.loads(argsStr)
+
+        if name == 'embed':
+            if len(args) > 0:
+               content = args[0]
+               response['data'] = process.Embedding(content)
+            else:
+                response['message'] = 'missing the args'
+        else:
+           response['message'] = 'request not supported'
+
+
+        json_data = json.dumps(response)
         json_bytes = json_data.encode()
 
         result.response = json_bytes
