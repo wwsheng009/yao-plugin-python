@@ -42,8 +42,8 @@ class GRPCControllerServicer(grpc_controller_pb2_grpc.GRPCControllerServicer):
         Shut down the server using the configured grace period
         """
         
-        log.info("Shutdown")
-        return
+        # log.info("Shutdown")
+        # return
         # return if use the independent grpc server ,don't stop the server
         #
         event = self._server.stop(self._grace)  # type: threading.Event
@@ -70,6 +70,7 @@ class ModelServicer(model_pb2_grpc.ModelServicer):
         if name == 'embed':
             if len(args) > 0:
                content = args[0]
+            #    需要安装ai相关的包
                response['data'] = process.Embedding(content)
             else:
                 response['message'] = 'missing the args'
