@@ -47,8 +47,6 @@ pyinstaller .\myplugin.py -F
 #或是使用golang作一个封装
 go build -o myplugin.dll .\myplugin.go
 
-
-
 ```
 
 ## 测试
